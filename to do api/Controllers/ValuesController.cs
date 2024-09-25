@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using to_do_api.DTO;
+using to_do_api.Modules;
+using to_do_api.Services;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -11,36 +14,31 @@ namespace to_do_api.Controllers
     [Route("api/[controller]")]
     public class ValuesController : Controller
     {
-        // GET: api/values
+
+        private readonly ICardService _cardService;
+
+        public ValuesController(ICardService cardService)
+        {
+            _cardService = cardService;
+        }
+
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<List<Card>> Get()
         {
-            return new string[] { "value1", "value2" };
+            return await _cardService.GetFullTable();
         }
 
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST api/values
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<IEnumerable<CardDTO>> Post([FromBody] CardDTO model)
         {
+            await _cardService.Add(model);
+            return _cardService.GenerateCard();
         }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut]
+        public async Task Put(string id)
         {
-        }
-
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            await _cardService.ChangeIndicator(id);
         }
     }
 }
