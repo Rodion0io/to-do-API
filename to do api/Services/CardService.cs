@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using to_do_api.Modules;
 using to_do_api.DTO;
@@ -60,6 +61,56 @@ namespace to_do_api.Services
 				throw new Exception("Card not found");
 			}
 		}
+
+		public async Task ChangeText(string id, string newText)
+		{
+			var card = await _context.Cards.FindAsync(Guid.Parse(id));
+
+			if (card != null)
+			{
+				card.Text = newText;
+				await _context.SaveChangesAsync();
+			}
+			else
+			{
+				throw new Exception("Card not found");
+			}
+		}
+
+		public async Task DeleteCard(string id)
+		{
+			var card = await _context.Cards.FindAsync(Guid.Parse(id));
+		
+			if (card != null)
+			{
+				_context.Cards.Remove(card);
+				await _context.SaveChangesAsync();
+			}
+			else
+			{
+				throw new Exception("Card not found");
+			}
+		}
+
+		public async Task DeleteTable()
+		{
+			var table = _context.Cards.ToList();
+			_context.Cards.RemoveRange(table);
+			await _context.SaveChangesAsync();
+		}
+		
+		public async Task AddCards(List<Card> cards)
+		{
+			if (cards == null || cards.Count == 0)
+			{
+				throw new InvalidDataException("ошибка");
+			}
+			else if (_context.Cards.ToList().Count != 0)
+			{
+				DeleteTable();
+				await _context.Cards.AddRangeAsync(cards);
+				await _context.SaveChangesAsync();
+			}
+		}
 	}
 }
-
