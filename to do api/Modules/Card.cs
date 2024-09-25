@@ -10,9 +10,8 @@ namespace to_do_api.Modules
 		public Card(string Text)
 		{
 			this.Text = Text;
-            IsSelected = false;
+            
 		}
 
 	}
 }
-
