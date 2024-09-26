@@ -103,11 +103,16 @@ namespace to_do_api.Services
 		{
 			if (cards == null || cards.Count == 0)
 			{
-				throw new InvalidDataException("ошибка");
+				throw new InvalidDataException("Error");
 			}
 			else if (_context.Cards.ToList().Count != 0)
 			{
 				DeleteTable();
+				await _context.Cards.AddRangeAsync(cards);
+				await _context.SaveChangesAsync();
+			}
+			else
+			{
 				await _context.Cards.AddRangeAsync(cards);
 				await _context.SaveChangesAsync();
 			}

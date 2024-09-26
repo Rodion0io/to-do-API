@@ -28,7 +28,7 @@ namespace to_do_api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, "error 500");
             }
         }
 
@@ -39,7 +39,7 @@ namespace to_do_api.Controllers
             {
                 if (model == null)
                 {
-                    return BadRequest("Card model is null.");
+                    return BadRequest("error");
                 }
 
                 await _cardService.Add(model);
@@ -48,7 +48,7 @@ namespace to_do_api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, "error 500");
             }
         }
 
@@ -59,15 +59,15 @@ namespace to_do_api.Controllers
             {
                 if (string.IsNullOrEmpty(id))
                 {
-                    return BadRequest("Card ID is null or empty.");
+                    return BadRequest("error");
                 }
 
                 await _cardService.ChangeIndicator(id);
-                return Ok("Indicator changed successfully.");
+                return Ok("success");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, "error 500");
             }
         }
 
@@ -78,20 +78,20 @@ namespace to_do_api.Controllers
             {
                 if (string.IsNullOrEmpty(id))
                 {
-                    return BadRequest("Card ID is null or empty.");
+                    return BadRequest("error");
                 }
 
                 if (string.IsNullOrEmpty(newText))
                 {
-                    return BadRequest("New text is null or empty.");
+                    return BadRequest("error");
                 }
 
                 await _cardService.ChangeText(id, newText);
-                return Ok("Text changed successfully.");
+                return Ok("success");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, "error 500");
             }
         }
 
@@ -102,15 +102,15 @@ namespace to_do_api.Controllers
             {
                 if (string.IsNullOrEmpty(id))
                 {
-                    return BadRequest("Card ID is null or empty.");
+                    return BadRequest("error");
                 }
 
                 await _cardService.DeleteCard(id);
-                return Ok("Card deleted successfully.");
+                return Ok("success");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, "error 500");
             }
         }
 
@@ -120,11 +120,11 @@ namespace to_do_api.Controllers
             try
             {
                 await _cardService.DeleteTable();
-                return Ok("Table cleared successfully.");
+                return Ok("success");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, "error 500");
             }
         }
 
@@ -135,15 +135,15 @@ namespace to_do_api.Controllers
             {
                 if (cards == null || cards.Count == 0)
                 {
-                    return BadRequest("Card list is null or empty.");
+                    return BadRequest("error");
                 }
 
                 await _cardService.AddCards(cards);
-                return Ok("List uploaded successfully.");
+                return Ok("success");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, "error 500");
             }
         }
     }
