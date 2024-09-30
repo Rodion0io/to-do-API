@@ -17,6 +17,15 @@ builder.Services.AddDbContext<Context>(options => options.UseNpgsql(connection))
 // Регистрация сервиса ICardService
 builder.Services.AddScoped<ICardService, CardService>();
 
+// Добавляем CORS с политикой, разрешающей доступ с любого источника
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+        builder => builder.AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod());
+});
+
 var app = builder.Build();
 
 // Инициализация БД
@@ -32,6 +41,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseAuthorization();
+
+// Добавляем middleware CORS с политикой AllowAllOrigins
+app.UseCors("AllowAllOrigins");
 
 app.MapControllers();
 

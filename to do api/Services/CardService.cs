@@ -107,7 +107,7 @@ namespace to_do_api.Services
 			}
 			else if (_context.Cards.ToList().Count != 0)
 			{
-				DeleteTable();
+				await DeleteTable();
 				await _context.Cards.AddRangeAsync(cards);
 				await _context.SaveChangesAsync();
 			}

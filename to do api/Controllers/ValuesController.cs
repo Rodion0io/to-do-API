@@ -52,7 +52,7 @@ namespace to_do_api.Controllers
             }
         }
 
-        [HttpPut("changeIndicator")]
+        [HttpPut("changeIndicator/{id}")]
         public async Task<IActionResult> Put(string id)
         {
             try
@@ -71,8 +71,8 @@ namespace to_do_api.Controllers
             }
         }
 
-        [HttpPut("changeText")]
-        public async Task<IActionResult> Put(string id, string newText)
+        [HttpPut("changeText/{id}")]
+        public async Task<IActionResult> Put(string id, [FromBody] CardDTO model)
         {
             try
             {
@@ -81,12 +81,12 @@ namespace to_do_api.Controllers
                     return BadRequest("error");
                 }
 
-                if (string.IsNullOrEmpty(newText))
+                if (string.IsNullOrEmpty(model.Text))
                 {
                     return BadRequest("error");
                 }
 
-                await _cardService.ChangeText(id, newText);
+                await _cardService.ChangeText(id, model.Text);
                 return Ok("success");
             }
             catch (Exception ex)
@@ -95,7 +95,7 @@ namespace to_do_api.Controllers
             }
         }
 
-        [HttpDelete("delete")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete(string id)
         {
             try
