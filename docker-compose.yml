@@ -19,7 +19,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    entrypoint:
+    environment:
       - ConnectionStrings__Defaultconnection=Host=database_host;Database=to do;Username=postgres;Password=12345;
     deploy:
       resources:
