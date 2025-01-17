@@ -12,7 +12,7 @@ test-job:
   stage: test
   script: 
 #    - -s -v вроде бы для логов
-    - docker run --rm app:latest dotnet test -s -v
+    - docker run -d --rm app:latest dotnet test -s -v
 
 deploy-job:
   stage: deploy
