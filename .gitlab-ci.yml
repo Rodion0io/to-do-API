@@ -22,7 +22,7 @@ test-job:
 deploy-job:
   stage: deploy
   script:
-    - docker-compose u -d
+    - docker-compose up -d
   dependencies:
     - test-job
 
