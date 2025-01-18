@@ -23,6 +23,10 @@ deploy-job:
   stage: deploy
   script:
     - docker-compose up -d
+    - echo "Deploy to staging server"
   dependencies:
     - test-job
+  environment:
+      name: staging
+      url: https://staging.example.com
 
