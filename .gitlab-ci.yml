@@ -25,3 +25,5 @@ deploy-job:
     - docker-compose up -d
   dependencies:
     - test-job
+
+#коммент для пуша
