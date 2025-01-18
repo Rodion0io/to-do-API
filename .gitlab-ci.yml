@@ -2,6 +2,10 @@ stages:
   - build
   - test
   - deploy
+  - notify
+
+variables:
+  APP_VERSION: "1.0.0" #временно
 
 build-job:
   stage: build
@@ -10,10 +14,9 @@ build-job:
 
 test-job:
   stage: test
-  script: 
-#    - -s -v вроде бы для логов
+  script:
     - docker run -d --rm app:latest dotnet test -s -v
-  artifacts: 
+  artifacts:
     paths:
       - ./Dockerfile
     when: on_success
@@ -26,3 +29,31 @@ deploy-job:
   dependencies:
     - test-job
 
+notify-discord:
+  stage: notify
+  script:
+    - |
+      if [ "$CI_JOB_STATUS" == "success" ]; then
+        STATUS="**УСПЕШНО** ✅"
+        COLOR=3066993
+      else
+        STATUS="**НЕУДАЧНО** ❌"
+        COLOR=15158332
+      fi
+      PAYLOAD=$(cat <<EOF
+      {
+        "content": "## Деплой приложения завершен!",
+        "embeds": [
+          {
+            "title": "Статус джобы",
+            "description": "${STATUS}\n\n**Версия приложения:** \`${APP_VERSION}\`\n**Проект:** ${CI_PROJECT_NAME}\n**Пайплайн:** [#${CI_PIPELINE_IID}](${CI_PIPELINE_URL})",
+            "color": ${COLOR}
+          }
+        ]
+      }
+      EOF
+      )
+      curl -X POST -H "Content-Type: application/json" -d "${PAYLOAD}" "https://discord.com/api/webhooks/YOUR_WEBHOOK_URL"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+    - if: '$CI_COMMIT_TAG'
