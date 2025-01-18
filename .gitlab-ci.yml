@@ -26,3 +26,4 @@ deploy-job:
   dependencies:
     - test-job
 
+#коммент для пуша
