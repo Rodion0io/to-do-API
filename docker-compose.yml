@@ -1,0 +1,48 @@
+﻿networks:
+  internal_network:
+    name: internal_network
+    driver: bridge
+
+services:
+  web:
+    container_name: app
+    build: .
+    ports:
+      - "127.0.0.1:8080:80"
+    depends_on:
+      - db
+    networks:
+      - internal_network
+    restart: on-failure
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:80/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    environment:
+      - ConnectionStrings__Defaultconnection=Host=database_host;Database=to do;Username=postgres;Password=12345;
+    deploy:
+      resources:
+        limits:
+          cpus: 1
+  
+  db:
+    image: postgres:alpine
+    container_name: db
+    hostname: database_host
+    expose:
+      - "5432"
+    networks:
+      - internal_network
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: "to do"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    
+volumes:
+  postgres_data:

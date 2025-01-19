@@ -1,0 +1,48 @@
+stages:
+  - build
+  - test
+  - deploy-staging
+  - deploy-production
+
+build-job:
+  stage: build
+  script:
+    - docker build -t app:latest .
+
+test-job:
+  stage: test
+  script: 
+#    - -s -v вроде бы для логов
+    - docker run -d --rm app:latest dotnet test -s -v
+  artifacts: 
+    paths:
+      - ./Dockerfile
+    when: on_success
+    expire_in: 30 days
+    
+deploy-staging:
+  stage: deploy-staging
+  script: 
+    - docker-compose up -d
+    - echo "staging deploy"
+  environment: 
+    name: staging
+  dependencies:
+    - test-job
+  rules: 
+    - if: '$CI_COMMIT_REF_NAME == "dev"'
+
+
+deploy-production:
+  stage: deploy-production
+  script:
+    - docker-compose up -d
+    - echo "production deploy"
+  environment:
+    name: production
+  dependencies:
+    - test-job
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "main"'
+
+#jfdngkjdnf
