@@ -43,6 +43,6 @@ deploy-production:
   dependencies:
     - test-job
   rules:
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" && $CI_COMMIT_REF_NAME == "main"'
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" || $CI_COMMIT_REF_NAME == "main"'
 
 #jfdngkjdnf
