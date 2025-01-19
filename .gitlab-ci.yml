@@ -1,48 +1,61 @@
 stages:
   - build
+  - linter
   - test
   - deploy-staging
   - deploy-production
 
-build-job:
-  stage: build
+#Шаблоны для ветки main
+.build-template-main:
   script:
     - docker build -t app:latest .
 
-test-job:
-  stage: test
-  script: 
-#    - -s -v вроде бы для логов
-    - docker run -d --rm app:latest dotnet test -s -v
-  artifacts: 
+.linter-template-main:
+  script:
+    - docker run --rm -d app:latest dotnet format --check
+  needs:
+    - build-job-main
+
+.test-template-main:
+  script:
+    - docker run --rm -d app:latest dotnet test
+  artifacts:
     paths:
       - ./Dockerfile
     when: on_success
     expire_in: 30 days
-    
-deploy-staging:
-  stage: deploy-staging
-  script: 
-    - docker-compose up -d
-    - echo "staging deploy"
-  environment: 
-    name: staging
-  dependencies:
-    - test-job
-  rules: 
-    - if: '$CI_COMMIT_REF_NAME == "dev"'
+  needs:
+    - linter-job-main
 
+.deploy-template-main:
+  script:
+    - docker-compose up -d
+  environment:
+    name: production
+  needs:
+    - test-job-main
+
+#ветка main
+build-job-main:
+  stage: build
+  extends: .build-template-main
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "main"'
+
+linter-job-main:
+  stage: linter
+  extends: .linter-template-main
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "main"'
+
+test-job-main:
+  stage: test
+  extends: .test-template-main
+  rules:
+    - if: '$CI_COMMIT_REF_NAME == "main"'
 
 deploy-production:
   stage: deploy-production
-  script:
-    - docker-compose up -d
-    - echo "production deploy"
-  environment:
-    name: production
-  dependencies:
-    - test-job
+  extends: .deploy-template-main
   rules:
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" || $CI_COMMIT_REF_NAME == "main"'
-
-#jfdngkjdnf
+    - if: '$CI_COMMIT_REF_NAME == "main"'
